@@ -12,24 +12,21 @@ public class App
 {
     public static final String API_URL = "https://api.github.com";
 
-    public static class Contributor {
+    public static class User {
         public final String login;
-        public final int contributions;
-        public final String avatar_url;
+        public final int id;
 
-        public Contributor(String login, int contributions, String avatar_url) {
+        public User(String login, int id){
             this.login = login;
-            this.contributions = contributions;
-            this.avatar_url = avatar_url;
+            this.id = id;
         }
     }
 
     public interface GitHub {
-        @GET("/repos/{owner}/{repo}/contributors")
-        Call<List<Contributor>> contributors(
-                @Path("owner") String owner,
-                @Path("repo") String repo);
+        @GET("users/garretaserra/followers")
+        Call<List<User>> users();
     }
+
 
     public static void main( String[] args ) throws IOException
     {
@@ -44,12 +41,12 @@ public class App
         GitHub github = retrofit.create(GitHub.class);
 
         // Create a call instance for looking up Retrofit contributors.
-        Call<List<Contributor>> call = github.contributors("RouteInjector", "route-injector");
+        Call<List<User>> call = github.users();
 
         // Fetch and print a list of the contributors to the library.
-        List<Contributor> contributors = call.execute().body();
-        for (Contributor contributor : contributors) {
-            System.out.println(contributor.login + " (" + contributor.contributions + ") "+ contributor.avatar_url);
+        List<User> followers = call.execute().body();
+        for (User u : followers) {
+            System.out.println("Follower: "+u.login+" with id: "+u.id);
         }
     }
 }
